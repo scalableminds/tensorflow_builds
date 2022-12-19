@@ -34,6 +34,7 @@ jobs:
 
       - name: Build tensorflow
         run: |
+          export CC_OPT_FLAGS="-mno-avx2"
           # ./configure
           # bazel build --config=opt //tensorflow/tools/pip_package:build_pip_package
           # ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg
