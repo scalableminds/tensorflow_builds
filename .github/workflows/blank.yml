@@ -1,0 +1,43 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+on:
+  push:
+    branches:
+      - "**"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-12
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: tensorflow/tensorflow
+          ref: refs/tags/v2.8.0
+          
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+          architecture: "x64"
+      
+      - name: Install Python deps
+        run: |
+          pip install -U pip numpy wheel packaging requests opt_einsum
+          pip install -U keras_preprocessing --no-deps
+      
+      - name: Select Xcode
+        run: |
+          sudo xcode-select -s /Applications/Xcode_13.4.1.app
+
+      - name: Build tensorflow
+        run: |
+          ./configure
+          bazel build --config=opt //tensorflow/tools/pip_package:build_pip_package
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: tensorflow-whl
+          path: path/to/artifact/world.txt
